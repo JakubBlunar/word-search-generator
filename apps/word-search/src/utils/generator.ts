@@ -1,4 +1,5 @@
 import wordsJson from './words.json'
+import wordsJsonCz from './words_cz.json'
 import _ from 'lodash'
 import { Puzzle, WordPositions } from './puzzle'
 
@@ -11,6 +12,7 @@ type Options = {
   height: number
   numberOfWords?: number
   effort?: number
+  lang?: string
 }
 
 function getRandomElementsFromArray(arr: string[], n: number) {
@@ -33,9 +35,10 @@ function getRandomElementsFromArray(arr: string[], n: number) {
 }
 
 export async function generateSinglePuzzle(options: Options): Promise<Puzzle> {
+  const wordsList = options.lang === 'cz' ? wordsJsonCz : wordsJson
   if (!options.words) {
     options.words = getRandomElementsFromArray(
-      wordsJson.words,
+      wordsList.words,
       options.numberOfWords || 20
     )
   }
@@ -138,8 +141,8 @@ export async function generateSinglePuzzle(options: Options): Promise<Puzzle> {
       if (firstLength < 3) firstLength = 3
       const secondLength = empty - firstLength
 
-      const firstWords = _.get(wordsJson.lengths, `${firstLength}`, '')
-      const secondWords = _.get(wordsJson.lengths, `${secondLength}`, '')
+      const firstWords = _.get(wordsList.lengths, `${firstLength}`, '')
+      const secondWords = _.get(wordsList.lengths, `${secondLength}`, '')
 
       const firstSolutionWord = firstWords[rand(firstWords.length)]
       const secondSolutionWord = secondWords[rand(secondWords.length)]
@@ -148,7 +151,7 @@ export async function generateSinglePuzzle(options: Options): Promise<Puzzle> {
 
       solutionString = `${firstSolutionWord}, ${secondSolutionWord}`
     } else {
-      const solutionWords = _.get(wordsJson.lengths, `${empty}`, '')
+      const solutionWords = _.get(wordsList.lengths, `${empty}`, '')
       const solutionWord = solutionWords[rand(solutionWords.length)]
       solution = solutionWord
       solutionString = solutionWord

@@ -5,6 +5,7 @@ import { times, map, reduce, keys } from 'lodash'
 import { useEffect, useState } from 'react'
 import { wrap } from 'comlink'
 import { Puzzle, getCharacter } from '../utils/puzzle'
+import { useParams } from 'react-router-dom'
 
 const StyledPage = styled.div`
   @page {
@@ -183,7 +184,7 @@ const GeneratedPuzzle = ({
   )
 }
 
-const generatePuzzle = async () => {
+const generatePuzzle = async (lang?: string) => {
   const worker = new Worker(
     /* webpackChunkName: "generator-worker" */ new URL(
       './generator-worker',
@@ -202,6 +203,7 @@ const generatePuzzle = async () => {
     minLength: 3,
     maxLength: 6,
     effort: 70000,
+    lang,
   })
 
   return {
@@ -210,13 +212,17 @@ const generatePuzzle = async () => {
   }
 }
 
-export const Generated = () => {
+type GeneratedProps = {
+  lang?: string
+}
+
+export const Generated = ({ lang }: GeneratedProps) => {
   const [puzzles, setPuzzles] = useState<
     { puzzle: Puzzle; highlight: Highlight }[]
   >([])
 
   const reload = (index: number) => async () => {
-    const puzzle = await generatePuzzle()
+    const puzzle = await generatePuzzle(lang)
 
     setPuzzles((prev) => {
       const newPuzzles = [...prev]
@@ -226,7 +232,7 @@ export const Generated = () => {
   }
 
   useEffect(() => {
-    const promises = times(48, () => generatePuzzle())
+    const promises = times(48, () => generatePuzzle(lang))
     Promise.all(promises).then((generated) => {
       setPuzzles(generated)
       setTimeout(() => window.print(), 2000)
