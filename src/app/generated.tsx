@@ -3,7 +3,7 @@
 import styled from 'styled-components'
 import { times, map, reduce, keys } from 'lodash'
 import { useEffect, useState } from 'react'
-import { wrap } from 'comlink'
+
 import { Puzzle, getCharacter } from '../utils/puzzle'
 
 const StyledPage = styled.div`
@@ -113,7 +113,7 @@ const createHighlight = (puzzle: Puzzle): Highlight =>
     { words: {}, positions: {} } as {
       words: Record<string, string>
       positions: Record<string, string>
-    }
+    },
   )
 
 type GeneratedPuzzleProps = {
@@ -184,17 +184,14 @@ const GeneratedPuzzle = ({
 }
 
 const generatePuzzle = async (lang?: string) => {
-  const worker = new Worker(
-    /* webpackChunkName: "generator-worker" */ new URL(
-      './generator-worker',
-      import.meta.url
-    )
+  const worker = new ComlinkWorker<typeof import('./generator-worker')>(
+    new URL('./generator-worker', import.meta.url),
+    {
+      /* normal Worker options*/
+    },
   )
 
-  const { generate } =
-    wrap<import('./generator-worker').GeneratorWorkerType>(worker)
-
-  const puzzle = await generate({
+  const puzzle = await worker.generate({
     diagonals: true,
     height: 9,
     width: 13,
