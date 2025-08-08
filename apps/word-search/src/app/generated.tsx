@@ -5,7 +5,6 @@ import { times, map, reduce, keys } from 'lodash'
 import { useEffect, useState } from 'react'
 import { wrap } from 'comlink'
 import { Puzzle, getCharacter } from '../utils/puzzle'
-import { useParams } from 'react-router-dom'
 
 const StyledPage = styled.div`
   @page {
