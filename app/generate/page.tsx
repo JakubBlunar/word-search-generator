@@ -56,6 +56,10 @@ function GenerateApp() {
   )
   const [busy, setBusy] = useState(true)
   const busyRef = useRef(0)
+  // One request per batch. When the user navigates away (e.g. clicks "New
+  // settings"), the unmount cleanup aborts the in-flight request so Vercel
+  // doesn't keep spinning for a page that no one's looking at anymore.
+  const currentAbortRef = useRef<AbortController | null>(null)
 
   const params = {
     lang: (LANGS as readonly string[]).includes(searchParams.get('lang') ?? '')
@@ -74,6 +78,8 @@ function GenerateApp() {
     async (indexes: number[]) => {
       busyRef.current += 1
       setBusy(true)
+      const controller = new AbortController()
+      currentAbortRef.current = controller
       setSlots((prev) =>
         prev.map((s, i) => (indexes.includes(i) ? pendingSlot(s.label) : s)),
       )
@@ -81,6 +87,7 @@ function GenerateApp() {
         const res = await fetch('/api/generate', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
+          signal: controller.signal,
           body: JSON.stringify({
             lang: params.lang,
             count: indexes.length,
@@ -108,6 +115,10 @@ function GenerateApp() {
           }),
         )
       } catch (error) {
+        // The user left via "New settings" → silent cancel, no error UI.
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          return
+        }
         const message =
           error instanceof Error ? error.message : 'generation failed'
         setSlots((prev) =>
@@ -131,12 +142,17 @@ function GenerateApp() {
     ],
   )
 
-  // Strict Mode (dev) runs mount effects twice — fire the initial batch once.
-  const firedRef = useRef(false)
+  // Fire the initial batch on mount, and abort the in-flight request on
+  // unmount. Strict Mode (dev) runs mount + unmount + remount once — that's
+  // intentional, and this pattern survives it: the abort on simulated
+  // unmount kills the first request, the effect on the simulated remount
+  // fires a fresh one. Real unmount (user navigates away) → the cleanup
+  // aborts and the effect does NOT re-run.
   useEffect(() => {
-    if (firedRef.current) return
-    firedRef.current = true
     void generateInto(Array.from({ length: total }, (_, i) => i))
+    return () => {
+      currentAbortRef.current?.abort()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
