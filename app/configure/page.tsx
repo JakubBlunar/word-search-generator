@@ -36,7 +36,7 @@ function ConfigureApp() {
   const initialLang: Lang = inLangs(langParam) ? langParam : 'sk'
   const [lang, setLang] = useState<Lang>(initialLang)
   const [pages, setPages] = useState(3)
-  const [wordsPerPuzzle, setWordsPerPuzzle] = useState(50)
+
   const [minLength, setMinLength] = useState(3)
   const [maxLength, setMaxLength] = useState(6)
   const [diagonals, setDiagonals] = useState(true)
@@ -45,7 +45,6 @@ function ConfigureApp() {
     const params = new URLSearchParams({
       lang,
       pages: String(pages),
-      words: String(wordsPerPuzzle),
       minLength: String(minLength),
       maxLength: String(Math.max(maxLength, minLength)),
       diagonals: String(diagonals),
@@ -100,8 +99,10 @@ function ConfigureApp() {
                     onChange={() => setLang(code)}
                     className="sr-only"
                   />
-                  <span className="text-xl">{LANGUAGE_META[code].flag}</span>
-                  <span>{LANGUAGE_META[code].label}</span>
+                  <span className="grid h-5 place-items-center leading-none">
+                    {LANGUAGE_META[code].flag}
+                  </span>
+                  <span className="leading-none">{LANGUAGE_META[code].label}</span>
                 </label>
               ))}
             </div>
@@ -126,26 +127,6 @@ function ConfigureApp() {
               <span>1</span>
               <span>20</span>
             </div>
-          </fieldset>
-
-          <fieldset>
-            <div className="mb-3 flex items-baseline justify-between">
-              <legend className="font-medium">Words per puzzle</legend>
-              <span className="text-sm text-slate-600">{wordsPerPuzzle}</span>
-            </div>
-            <input
-              type="range"
-              min={20}
-              max={100}
-              step={5}
-              value={wordsPerPuzzle}
-              onChange={(e) => setWordsPerPuzzle(Number(e.target.value))}
-              className="w-full accent-indigo-600"
-            />
-            <p className="mt-1 text-xs text-slate-500">
-              20–100 words fit comfortably in the A4 13×9 grid.
-              More hidden words = harder to spot the bonus solution word.
-            </p>
           </fieldset>
 
           <fieldset className="grid gap-6 sm:grid-cols-2">
