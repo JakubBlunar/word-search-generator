@@ -151,8 +151,7 @@ function GenerateApp() {
             </p>
             <p className="text-xs text-slate-500" aria-live="polite">
               {busy
-                ? t('gen_status_busy') +
-                  ` ${readyCount}/${total} ${t('puzzle_s')}`
+                ? t('gen_status_busy') + ` ${readyCount}/${total}`
                 : t('gen_ready')}
             </p>
           </div>
