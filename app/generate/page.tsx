@@ -55,17 +55,7 @@ function GenerateApp() {
     ),
   )
   const [busy, setBusy] = useState(true)
-  const pendingRef = useRef(0)
-  // Strict-mode-safe "am I still alive" guard. setState on an unmounted
-  // tree is a no-op in React 18+, but the flag keeps the busy/pending
-  // bookkeeping from double-decrementing when the effect runs twice.
-  const mountedRef = useRef(true)
-  useEffect(() => {
-    mountedRef.current = true
-    return () => {
-      mountedRef.current = false
-    }
-  }, [])
+  const busyRef = useRef(0)
 
   const params = {
     lang: (LANGS as readonly string[]).includes(searchParams.get('lang') ?? '')
@@ -80,16 +70,12 @@ function GenerateApp() {
     diagonals: searchParams.get('diagonals') !== 'false',
   }
 
-  // Generate one puzzle at a time (concurrent across slots). If the
-  // user navigates away mid-run the in-flight requests complete in the
-  // background and their setState calls are no-ops on the unmounted tree.
-  const generateOne = useCallback(
-    async (index: number) => {
-      if (!mountedRef.current) return
-      pendingRef.current += 1
+  const generateInto = useCallback(
+    async (indexes: number[]) => {
+      busyRef.current += 1
       setBusy(true)
       setSlots((prev) =>
-        prev.map((s, i) => (i === index ? pendingSlot(s.label) : s)),
+        prev.map((s, i) => (indexes.includes(i) ? pendingSlot(s.label) : s)),
       )
       try {
         const res = await fetch('/api/generate', {
@@ -97,7 +83,7 @@ function GenerateApp() {
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
             lang: params.lang,
-            count: 1,
+            count: indexes.length,
             options: {
               minLength: params.minLength,
               maxLength: params.maxLength,
@@ -108,34 +94,32 @@ function GenerateApp() {
         })
         if (!res.ok) throw new Error(`server error ${res.status}`)
         const data = (await res.json()) as { puzzles: PuzzleData[] }
-        const puzzle = data.puzzles[0]
-        if (!mountedRef.current) return
         setSlots((prev) =>
-          prev.map((s, i) =>
-            i === index
-              ? {
-                  status: 'ready' as const,
-                  label: s.label,
-                  puzzle,
-                  highlight: createHighlight(puzzle),
-                }
-              : s,
-          ),
+          prev.map((s, i) => {
+            const position = indexes.indexOf(i)
+            if (position === -1) return s
+            const puzzle = data.puzzles[position]
+            return {
+              status: 'ready' as const,
+              label: s.label,
+              puzzle,
+              highlight: createHighlight(puzzle),
+            }
+          }),
         )
       } catch (error) {
-        if (!mountedRef.current) return
         const message =
           error instanceof Error ? error.message : 'generation failed'
         setSlots((prev) =>
           prev.map((s, i) =>
-            i === index && s.status === 'pending'
+            indexes.includes(i) && s.status === 'pending'
               ? errorSlot(s.label, `${message} — click ↻ to retry`)
               : s,
           ),
         )
       } finally {
-        pendingRef.current -= 1
-        if (mountedRef.current && pendingRef.current <= 0) setBusy(false)
+        busyRef.current -= 1
+        if (busyRef.current <= 0) setBusy(false)
       }
     },
     [
@@ -147,16 +131,11 @@ function GenerateApp() {
     ],
   )
 
-  const generateInto = (indexes: number[]) => {
-    indexes.forEach((i) => void generateOne(i))
-  }
-
-  // React 18/19 Strict Mode runs the mount effect twice in dev. Fire the
-  // initial batch only once for a given set of slots.
-  const firedRef = useRef<Set<number>>(new Set())
+  // Strict Mode (dev) runs mount effects twice — fire the initial batch once.
+  const firedRef = useRef(false)
   useEffect(() => {
-    if (firedRef.current.size > 0) return
-    firedRef.current = new Set(Array.from({ length: total }, (_, i) => i))
+    if (firedRef.current) return
+    firedRef.current = true
     void generateInto(Array.from({ length: total }, (_, i) => i))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -171,11 +150,7 @@ function GenerateApp() {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-3">
           <div>
             <p className="text-sm font-semibold text-slate-900">
-              {params.lang.toUpperCase()} · {total} {plural(uiLang, total, {
-                  one: 'puzzle_one',
-                  many: 'puzzle_interval',
-                  other: 'puzzle_other',
-                })} · {pages}{' '}
+              {params.lang.toUpperCase()} · {total} {t('puzzle_p')} · {pages}{' '}
               {plural(uiLang, pages, {
                 one: 'page_one',
                 many: 'page_interval',
