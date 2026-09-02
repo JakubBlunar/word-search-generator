@@ -1,11 +1,10 @@
 'use client'
 
-import { Suspense, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { LANGS } from '@/lib/types'
 import type { Lang } from '@/lib/types'
-import { detectUILang } from '@/lib/i18n'
 import { useI18n } from '../i18n-provider'
 import { LangSwitcher } from '../components/lang-switcher'
 
@@ -15,9 +14,6 @@ const LANGUAGE_FLAG: Record<Lang, string> = {
   cz: '🇨🇿',
   en: '🇬🇧',
 }
-
-const inLangs = (v: string | null): v is Lang =>
-  v !== null && (LANGS as readonly string[]).includes(v)
 
 export default function ConfigurePage() {
   return (
@@ -34,14 +30,20 @@ export default function ConfigurePage() {
 }
 
 function ConfigureApp() {
-  const { t } = useI18n()
+  const { t, lang: uiLang } = useI18n()
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const langParam = searchParams.get('lang')
-  // Default the word-list language to the user's detected language,
-  // falling back to English for anything that isn't Slovak/Czech.
-  const initialLang: Lang = inLangs(langParam) ? langParam : detectUILang()
-  const [lang, setLang] = useState<Lang>(initialLang)
+  // Word-list defaults to the current UI language. The i18n provider
+  // starts at 'en' on first paint, so track that first resolution and
+  // apply it before letting the user override it with the radio cards.
+  const [lang, setLang] = useState<Lang>(uiLang)
+  const userTouchedLang = useRef(false)
+  useEffect(() => {
+    if (!userTouchedLang.current) setLang(uiLang)
+  }, [uiLang])
+  const pickLang = (l: Lang) => {
+    userTouchedLang.current = true
+    setLang(l)
+  }
   const [pages, setPages] = useState(3)
 
   const [minLength, setMinLength] = useState(3)
@@ -109,7 +111,7 @@ function ConfigureApp() {
                     name="lang"
                     value={code}
                     checked={lang === code}
-                    onChange={() => setLang(code)}
+                    onChange={() => pickLang(code)}
                     className="sr-only"
                   />
                   <span className="grid h-5 place-items-center leading-none">

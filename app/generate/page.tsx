@@ -161,7 +161,7 @@ function GenerateApp() {
               <LangSwitcher />
             </span>
             <Link
-              href={`/configure?lang=${params.lang}`}
+              href="/configure"
               className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
             >
               {t('new_settings')}
