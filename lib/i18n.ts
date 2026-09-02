@@ -57,8 +57,9 @@ const en: Dict = {
   cfg_note: 'Each A4 page contains {n} {p}.',
   language: 'Language',
   pages: 'Pages',
-  page_s: 'page',
-  page_p: 'pages',
+  page_one: 'page',
+  page_interval: 'pages',
+  page_other: 'pages',
   puzzle_s: 'puzzle',
   puzzle_p: 'puzzles',
   word_length: 'Word length',
@@ -125,8 +126,9 @@ const sk: Dict = {
   cfg_note: 'Každá A4 strana obsahuje {n} {p}.',
   language: 'Jazyk',
   pages: 'Strany',
-  page_s: 'strana',
-  page_p: 'strany',
+  page_one: 'strana',
+  page_interval: '(2-4) strany;',
+  page_other: 'strán',
   puzzle_s: 'osemsmerovka',
   puzzle_p: 'osemsmeroviek',
   word_length: 'Dĺžka slov',
@@ -138,7 +140,7 @@ const sk: Dict = {
   directions_desc:
     'Bez diagonál sa umiestňujú iba vodorovné a zvislé slová.',
   back: '← Späť',
-  generate_cta: 'Generovať {n} {p} →',
+  generate_cta: 'Generovať →',
   // generate
   gen_toolbar: '{lang} · {n} {puzzles} · {m} {pages}',
   gen_status_busy: 'Generujem…',
@@ -193,8 +195,9 @@ const cz: Dict = {
   cfg_note: 'Každá strana A4 obsahuje {n} {p}.',
   language: 'Jazyk',
   pages: 'Strany',
-  page_s: 'strana',
-  page_p: 'strany',
+  page_one: 'strana',
+  page_interval: '(2-4) strany;',
+  page_other: 'stran',
   puzzle_s: 'osmisměrka',
   puzzle_p: 'osmisměrek',
   word_length: 'Délka slov',
@@ -206,7 +209,7 @@ const cz: Dict = {
   directions_desc:
     'Bez diagonál se umísťují pouze vodorovná a svislá slova.',
   back: '← Zpět',
-  generate_cta: 'Vygenerovat {n} {p} →',
+  generate_cta: 'Vygenerovat →',
   // generate
   gen_toolbar: '{lang} · {n} {puzzles} · {m} {pages}',
   gen_status_busy: 'Generuji…',
@@ -247,4 +250,26 @@ export function translate(
 /** Pick the singular or plural translation for a count. */
 export function pick(lang: UILang, n: number, singular: string, plural: string) {
   return n === 1 ? translate(lang, singular) : translate(lang, plural)
+}
+
+/**
+ * Pick the correct CLDR plural slot (`one` / `many` / `other`) for a count.
+ * en: 1 → one, else other. sk: 1 → one, 2–4 → many, else other.
+ * cz: 1 → one, 2–4 → many, else other.
+ */
+export function plural(
+  lang: UILang,
+  n: number,
+  keys: { one: string; many?: string; other: string },
+): string {
+  if (lang === 'en') return translate(lang, n === 1 ? keys.one : keys.other)
+  if (lang === 'sk' || lang === 'cz') {
+    if (n === 1) return translate(lang, keys.one)
+    if (n >= 2 && n <= 4) {
+      const k = keys.many ?? keys.other
+      return translate(lang, k)
+    }
+    return translate(lang, keys.other)
+  }
+  return translate(lang, keys.other)
 }

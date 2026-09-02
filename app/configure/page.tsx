@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { LANGS } from '@/lib/types'
 import type { Lang } from '@/lib/types'
+import { plural } from '@/lib/i18n'
 import { useI18n } from '../i18n-provider'
 import { LangSwitcher } from '../components/lang-switcher'
 
@@ -128,8 +129,12 @@ function ConfigureApp() {
               <legend className="font-medium">{t('pages')}</legend>
               <span className="text-sm text-slate-600">
                 {pages}{' '}
-                {t(pages === 1 ? 'page_s' : 'page_p')} · {pages * 3}{' '}
-                {t(pages * 3 === 1 ? 'puzzle_s' : 'puzzle_p')}
+                {plural(uiLang, pages, {
+                  one: 'page_one',
+                  many: 'page_interval',
+                  other: 'page_other',
+                })}{' '}
+                · {pages * 3} {t(pages * 3 === 1 ? 'puzzle_s' : 'puzzle_p')}
               </span>
             </div>
             <input

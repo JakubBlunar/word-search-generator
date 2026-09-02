@@ -8,6 +8,7 @@ import type { Lang, PuzzleData } from '@/lib/types'
 import { createHighlight } from '@/lib/highlight'
 import type { Highlight } from '@/lib/highlight'
 import { PuzzleView } from '@/components/puzzle-view'
+import { plural } from '@/lib/i18n'
 import { useI18n } from '../i18n-provider'
 import { LangSwitcher } from '../components/lang-switcher'
 
@@ -40,7 +41,7 @@ export default function GeneratePage() {
 }
 
 function GenerateApp() {
-  const { t } = useI18n()
+  const { t, lang: uiLang } = useI18n()
   const searchParams = useSearchParams()
   const total =
     Math.min(20, Math.max(1, Number(searchParams.get('pages')) || 3)) *
@@ -145,9 +146,12 @@ function GenerateApp() {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-3">
           <div>
             <p className="text-sm font-semibold text-slate-900">
-              {params.lang.toUpperCase()} · {total}{' '}
-              {t('puzzle_p')} · {pages}{' '}
-              {t(pages === 1 ? 'page_s' : 'page_p')}
+              {params.lang.toUpperCase()} · {total} {t('puzzle_p')} · {pages}{' '}
+              {plural(uiLang, pages, {
+                one: 'page_one',
+                many: 'page_interval',
+                other: 'page_other',
+              })}
             </p>
             <p className="text-xs text-slate-500" aria-live="polite">
               {busy
