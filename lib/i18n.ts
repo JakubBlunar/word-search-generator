@@ -22,14 +22,23 @@ type Dict = Record<string, string>
 
 const en: Dict = {
   brand: 'Word Search',
+  // canonical copywriting
+  word_search: 'Word Search',
+  word_search_puzzle: 'Word Search Puzzle',
+  find_the_words: 'Find the words',
+  words_to_find: 'Words to find',
+  generate_puzzle: 'Generate puzzle',
+  solution: 'Solution',
+  new_puzzle: 'New puzzle',
+  solution_of: 'Solution of',
   // home
-  generatePuzzles: 'Generate puzzles',
+  generatePuzzles: 'Generate puzzle',
   badge: 'Printable puzzle generator',
-  h1a: 'Word search puzzles,',
-  h1b: 'made to print.',
+  h1a: 'Find the words',
+  h1b: 'in a printable puzzle.',
   intro:
     'Pick a language, choose how many pages you need, and get a print-ready A4 sheet — three puzzles per page, no clutter on the paper.',
-  start: 'Start generating',
+  start: 'Generate puzzle',
   free: 'Free · no account · prints locally in your browser',
   feat1_title: 'Three languages',
   feat1_desc:
@@ -37,7 +46,7 @@ const en: Dict = {
   feat2_title: 'Ready for A4 print',
   feat2_desc:
     'Every page holds three puzzles. Press print and your pages come out exactly as laid out.',
-  feat3_title: 'Hidden solution word',
+  feat3_title: 'Bonus solution word',
   feat3_desc:
     'Each puzzle hides one bonus word in the grid. The answer key stays off the printed page.',
   footer: 'Word Search — generated for you, printed on your printer.',
@@ -61,7 +70,7 @@ const en: Dict = {
   directions_desc:
     'Without diagonals only horizontal and vertical words are placed.',
   back: '← Back',
-  generate_cta: 'Generate {n} {p} →',
+  generate_cta: 'Vygenerovať {n} {p} →',
   // generate
   gen_toolbar: '{lang} · {n} {puzzles} · {m} {pages}',
   gen_status_busy: 'Generating…',
@@ -69,10 +78,10 @@ const en: Dict = {
   new_settings: '← New settings',
   print: 'Print',
   generating_pct: 'Generating {done}/{total}…',
-  tip: 'Tip: the printed page hides the bonus solution word and color highlights. ↻ regenerates a single puzzle.',
+  tip: 'Tip: the printed page hides the solution and color highlights. ↻ generates a new puzzle.',
   bonus_word: 'bonus word',
   regenerating: 'regenerating…',
-  regenerate: '↻ Regenerate',
+  regenerate: '↻ New puzzle',
   retry: '↻ Retry',
   // language names (word list)
   lang_sk: 'Slovak',
@@ -81,14 +90,23 @@ const en: Dict = {
 }
 
 const sk: Dict = {
-  brand: 'Hľadanie slov',
-  generatePuzzles: 'Generovať hádanky',
+  brand: 'Osemsmerovka',
+  // canonical copywriting
+  word_search: 'Osemsmerovka',
+  word_search_puzzle: 'Osemsmerovka',
+  find_the_words: 'Nájdi slová',
+  words_to_find: 'Slová na nájdenie',
+  generate_puzzle: 'Vygenerovať osemsmerovku',
+  solution: 'Riešenie',
+  new_puzzle: 'Nová osemsmerovka',
+  solution_of: 'Riešenie osemsmerovky',
+  generatePuzzles: 'Vygenerovať osemsmerovku',
   badge: 'Generátor tlačitelných hádaniek',
-  h1a: 'Hádnky na hľadanie slov,',
-  h1b: 'pripravené na tlač.',
+  h1a: 'Nájdi slová',
+  h1b: 'v tlačiteľnej osemsmerovke.',
   intro:
     'Vyberte jazyk, počet strán a získajte tlačenú A4 — tri hádanky na stranu, bez neporiadku na papieri.',
-  start: 'Začať generovať',
+  start: 'Vygenerovať osemsmerovku',
   free: 'Zdarma · bez účtu · tlačí sa lokálne v prehliadači',
   feat1_title: 'Tri jazyky',
   feat1_desc:
@@ -108,8 +126,8 @@ const sk: Dict = {
   pages: 'Strany',
   page_s: 'strana',
   page_p: 'strany',
-  puzzle_s: 'hádanka',
-  puzzle_p: 'hádanky',
+  puzzle_s: 'osemsmerovka',
+  puzzle_p: 'osemsmerovky',
   word_length: 'Dĺžka slov',
   letters: 'písmen',
   min: 'Min',
@@ -128,7 +146,7 @@ const sk: Dict = {
   tip: 'Tip: na tlačené strane sú skryté bonusové slovo a farebné zdôraznenia. ↻ regeneruje jednu hádanku.',
   bonus_word: 'bonusové slovo',
   regenerating: 'sa regeneruje…',
-  regenerate: '↻ Regenerovať',
+  regenerate: '↻ Nová osemsmerovka',
   retry: '↻ Skúsiť znova',
   lang_sk: 'Slovenčina',
   lang_cz: 'Čeština',
@@ -136,14 +154,23 @@ const sk: Dict = {
 }
 
 const cz: Dict = {
-  brand: 'Hledání slov',
-  generatePuzzles: 'Generovat hádanky',
+  brand: 'Osmisměrka',
+  // canonical copywriting
+  word_search: 'Osmisměrka',
+  word_search_puzzle: 'Osmisměrka',
+  find_the_words: 'Najdi slova',
+  words_to_find: 'Slova k nalezení',
+  generate_puzzle: 'Vygenerovat osmisměrku',
+  solution: 'Řešení',
+  new_puzzle: 'Nová osmisměrka',
+  solution_of: 'Řešení osmisměrky',
+  generatePuzzles: 'Vygenerovat osmisměrku',
   badge: 'Generátor tisknutelných hádanek',
-  h1a: 'Hádnýk na hledání slov,',
-  h1b: 'připravené ke tisku.',
+  h1a: 'Najdi slova',
+  h1b: 'v tiskové osmisměrce.',
   intro:
     'Vyberte jazyk, počet stran a získejte tiskovou A4 — tři hádanky na stranu, bez nepořádku na papíře.',
-  start: 'Spustit generování',
+  start: 'Vygenerovat osmisměrku',
   free: 'Zdarma · bez účtu · tiskne se lokálně v prohlížeči',
   feat1_title: 'Tři jazyky',
   feat1_desc:
@@ -163,8 +190,8 @@ const cz: Dict = {
   pages: 'Strany',
   page_s: 'strana',
   page_p: 'strany',
-  puzzle_s: 'hádanka',
-  puzzle_p: 'hádanky',
+  puzzle_s: 'osmisměrka',
+  puzzle_p: 'osmisměrek',
   word_length: 'Délka slov',
   letters: 'písmen',
   min: 'Min',
@@ -183,7 +210,7 @@ const cz: Dict = {
   tip: 'Tip: na tiskové straně jsou skrytá bonusová slova a barevná zdůraznění. ↻ regeneruje jednu hádanku.',
   bonus_word: 'bonusové slovo',
   regenerating: 'se regeneruje…',
-  regenerate: '↻ Regenerovat',
+  regenerate: '↻ Nová osmisměrka',
   retry: '↻ Zkusit znovu',
   lang_sk: 'Slovenština',
   lang_cz: 'Čeština',

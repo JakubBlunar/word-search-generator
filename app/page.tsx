@@ -27,7 +27,7 @@ export default function Home() {
         <div className="flex items-center gap-2.5">
           <Logo />
           <span className="text-lg font-semibold tracking-tight">
-            {t('brand')}
+            {t('word_search')}
           </span>
         </div>
         <div className="flex items-center gap-3">

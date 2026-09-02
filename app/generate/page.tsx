@@ -201,7 +201,7 @@ function GenerateApp() {
                         <div className="puzzle-aux">
                           <span className="puzzle-solution">
                             <span className="puzzle-solution-label">
-                              {t('bonus_word')}
+                              {t('solution')}
                             </span>
                             <span className="solution-word">
                               {s.puzzle.solution}

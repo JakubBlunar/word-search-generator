@@ -68,7 +68,7 @@ function ConfigureApp() {
               WS
             </span>
             <span className="text-lg font-semibold tracking-tight">
-              {t('brand')}
+              {t('word_search')}
             </span>
           </Link>
           <div className="flex items-center gap-3">
