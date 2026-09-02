@@ -56,14 +56,14 @@ function GenerateApp() {
   )
   const [busy, setBusy] = useState(true)
   const pendingRef = useRef(0)
-  // Track in-flight fetches so we can abort them on unmount — this is
-  // what lets you actually navigate away from a stuck generation.
-  const controllersRef = useRef(new Set<AbortController>())
+  // Strict-mode-safe "am I still alive" guard. setState on an unmounted
+  // tree is a no-op in React 18+, but the flag keeps the busy/pending
+  // bookkeeping from double-decrementing when the effect runs twice.
+  const mountedRef = useRef(true)
   useEffect(() => {
-    const controllers = controllersRef.current
+    mountedRef.current = true
     return () => {
-      controllers.forEach((c) => c.abort())
-      controllers.clear()
+      mountedRef.current = false
     }
   }, [])
 
@@ -80,18 +80,17 @@ function GenerateApp() {
     diagonals: searchParams.get('diagonals') !== 'false',
   }
 
-  // Generate one puzzle at a time (concurrent across slots). Each
-  // request carries its own AbortController so the user can leave the
-  // page mid-generation without the in-flight work keeping them pinned.
+  // Generate one puzzle at a time (concurrent across slots). If the
+  // user navigates away mid-run the in-flight requests complete in the
+  // background and their setState calls are no-ops on the unmounted tree.
   const generateOne = useCallback(
     async (index: number) => {
+      if (!mountedRef.current) return
       pendingRef.current += 1
       setBusy(true)
       setSlots((prev) =>
         prev.map((s, i) => (i === index ? pendingSlot(s.label) : s)),
       )
-      const controller = new AbortController()
-      controllersRef.current.add(controller)
       try {
         const res = await fetch('/api/generate', {
           method: 'POST',
@@ -106,11 +105,11 @@ function GenerateApp() {
               diagonals: params.diagonals,
             },
           }),
-          signal: controller.signal,
         })
         if (!res.ok) throw new Error(`server error ${res.status}`)
         const data = (await res.json()) as { puzzles: PuzzleData[] }
         const puzzle = data.puzzles[0]
+        if (!mountedRef.current) return
         setSlots((prev) =>
           prev.map((s, i) =>
             i === index
@@ -124,10 +123,7 @@ function GenerateApp() {
           ),
         )
       } catch (error) {
-        // Swallow AbortError — the user navigated away.
-        if (error instanceof DOMException && error.name === 'AbortError') {
-          return
-        }
+        if (!mountedRef.current) return
         const message =
           error instanceof Error ? error.message : 'generation failed'
         setSlots((prev) =>
@@ -138,9 +134,8 @@ function GenerateApp() {
           ),
         )
       } finally {
-        controllersRef.current.delete(controller)
         pendingRef.current -= 1
-        if (pendingRef.current <= 0) setBusy(false)
+        if (mountedRef.current && pendingRef.current <= 0) setBusy(false)
       }
     },
     [
@@ -156,7 +151,12 @@ function GenerateApp() {
     indexes.forEach((i) => void generateOne(i))
   }
 
+  // React 18/19 Strict Mode runs the mount effect twice in dev. Fire the
+  // initial batch only once for a given set of slots.
+  const firedRef = useRef<Set<number>>(new Set())
   useEffect(() => {
+    if (firedRef.current.size > 0) return
+    firedRef.current = new Set(Array.from({ length: total }, (_, i) => i))
     void generateInto(Array.from({ length: total }, (_, i) => i))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
