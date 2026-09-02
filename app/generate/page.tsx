@@ -146,7 +146,11 @@ function GenerateApp() {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-3">
           <div>
             <p className="text-sm font-semibold text-slate-900">
-              {params.lang.toUpperCase()} · {total} {t('puzzle_p')} · {pages}{' '}
+              {params.lang.toUpperCase()} · {total} {plural(uiLang, total, {
+                  one: 'puzzle_one',
+                  many: 'puzzle_interval',
+                  other: 'puzzle_other',
+                })} · {pages}{' '}
               {plural(uiLang, pages, {
                 one: 'page_one',
                 many: 'page_interval',

@@ -75,18 +75,14 @@ function ConfigureApp() {
             </span>
           </Link>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-slate-500">
-              {t('step')}
-            </span>
+            <span className="text-sm text-slate-500">{t('step')}</span>
             <LangSwitcher />
           </div>
         </div>
       </header>
 
       <section className="mx-auto max-w-3xl px-6 py-10">
-        <h1 className="text-2xl font-bold tracking-tight">
-          {t('cfg_title')}
-        </h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t('cfg_title')}</h1>
         <p className="mt-2 text-sm text-slate-600">
           {t('cfg_note', {
             n: 3,
@@ -116,9 +112,9 @@ function ConfigureApp() {
                     className="sr-only"
                   />
                   <span className="grid h-5 place-items-center leading-none">
-                      {LANGUAGE_FLAG[code]}
-                    </span>
-                    <span className="leading-none">{t(`lang_${code}`)}</span>
+                    {LANGUAGE_FLAG[code]}
+                  </span>
+                  <span className="leading-none">{t(`lang_${code}`)}</span>
                 </label>
               ))}
             </div>
@@ -134,7 +130,12 @@ function ConfigureApp() {
                   many: 'page_interval',
                   other: 'page_other',
                 })}{' '}
-                · {pages * 3} {t(pages * 3 === 1 ? 'puzzle_s' : 'puzzle_p')}
+                · {pages * 3}{' '}
+                {plural(uiLang, pages * 3, {
+                  one: 'puzzle_one',
+                  many: 'puzzle_interval',
+                  other: 'puzzle_other',
+                })}
               </span>
             </div>
             <input
@@ -154,8 +155,8 @@ function ConfigureApp() {
           <fieldset className="grid gap-6 sm:grid-cols-2">
             <div>
               <legend className="mb-3 font-medium">
-                {t('word_length')}:{' '}
-                {minLength}–{Math.max(maxLength, minLength)} {t('letters')}
+                {t('word_length')}: {minLength}–{Math.max(maxLength, minLength)}{' '}
+                {t('letters')}
               </legend>
               <div className="space-y-4">
                 <label className="block text-xs text-slate-600">
