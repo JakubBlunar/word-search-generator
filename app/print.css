@@ -1,0 +1,273 @@
+/* Print layout — A4 portrait, 3 puzzles per page.
+   Each puzzle = grid (left) + word list (right) on one row,
+   with a "bonus word + regenerate" control row underneath (screen only). */
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+.print-sheet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: 210mm;
+  margin-inline: auto;
+}
+
+.print-page {
+  width: 210mm;
+  min-height: 297mm;
+  box-sizing: border-box;
+  /* a bit more breathing room on the left than the right */
+  padding: 8mm 8mm 8mm 12mm;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  gap: 4mm;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+  break-after: page;
+}
+
+.print-page:last-of-type {
+  break-after: auto;
+}
+
+.screen-note {
+  text-align: center;
+  padding: 12px 0 24px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* Each puzzle is a vertical column: body (grid + words) then aux controls. */
+.puzzle-cell {
+  display: flex;
+  flex-direction: column;
+  break-inside: avoid;
+}
+
+/* Body row: grid on the left, word list fills the rest of the width. */
+.puzzle-body {
+  display: flex;
+  align-items: flex-start;
+}
+
+.puzzle-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 4mm;
+  width: 100%;
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.puzzle-table {
+  table-layout: fixed;
+  border-collapse: collapse;
+  flex: 0 0 auto;
+  width: 95mm;
+}
+
+.puzzle-table td {
+  font-family: 'Roboto Mono', var(--font-roboto-mono, ui-monospace, monospace);
+  font-size: 8.5mm;
+  line-height: 9.5mm;
+  height: 9.5mm;
+  text-align: center;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.puzzle-words {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 8mm;
+  line-height: 1.5;
+  overflow-wrap: break-word;
+  columns: 1;
+  column-gap: 2mm;
+}
+
+.word {
+  display: inline-block;
+  margin-inline-start: 4px;
+}
+
+/* Footer control row: bonus word on the left, regenerate button on the right. */
+.puzzle-aux {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6mm;
+  margin-top: 3mm;
+  min-height: 8mm;
+}
+
+.puzzle-solution {
+  display: inline-flex;
+  align-items: center;
+  gap: 2mm;
+  font-size: 4.4mm;
+  color: #475569;
+}
+
+.puzzle-solution-label {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.78em;
+  color: #64748b;
+}
+
+.solution-word {
+  display: inline-block;
+  padding: 1mm 3mm;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  background: #f8fafc;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.puzzle-state {
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+  margin-top: 3mm;
+  min-height: 8mm;
+  font-size: 4.4mm;
+  color: #64748b;
+}
+
+.puzzle-state-label {
+  font-weight: 700;
+  min-width: 8mm;
+  color: #475569;
+}
+
+.puzzle-state-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.puzzle-state-error {
+  color: #b91c1c;
+}
+
+.puzzle-state-error .puzzle-state-label {
+  color: #b91c1c;
+}
+
+/* Busy states (regenerating / error) keep the puzzle mounted and dimmed
+   so the layout does not jump while we wait for a fresh grid. */
+.puzzle-cell-is-busy .puzzle-container {
+  opacity: 0.35;
+  filter: saturate(0.4);
+  pointer-events: none;
+}
+
+.puzzle-aux-status {
+  font-size: 4.3mm;
+  color: #4338ca;
+  font-weight: 600;
+}
+
+.puzzle-error-msg {
+  margin: 2mm 0 0 0;
+  font-size: 4.2mm;
+  color: #b91c1c;
+  overflow-wrap: anywhere;
+}
+
+.puzzle-state-full {
+  margin-top: 3mm;
+  min-height: 8mm;
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+  font-size: 4.4mm;
+  color: #64748b;
+  padding: 0 2mm;
+}
+
+.regen-btn {
+  appearance: none;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  font: inherit;
+  font-size: 4.3mm;
+  padding: 2mm 4mm;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 3mm;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.regen-btn:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.regen-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+@media print {
+  html,
+  body {
+    width: 210mm;
+    height: 297mm;
+  }
+
+  .print-sheet {
+    gap: 0;
+    margin: 0;
+  }
+
+  .print-page {
+    box-shadow: none !important;
+  }
+
+  .puzzle-container {
+    margin-bottom: 2mm;
+  }
+
+  /* Keep the printed page clean: hide chrome, controls, and the bonus word. */
+  .app-toolbar,
+  .screen-note,
+  .puzzle-aux,
+  .puzzle-error-msg,
+  .puzzle-state-full {
+    display: none !important;
+  }
+
+  /* A slot that is still generating or errored should not print an empty box. */
+  .puzzle-cell:not(.puzzle-cell-ready) {
+    display: none !important;
+  }
+
+  .word,
+  .puzzle-table td,
+  .puzzle-table td *,
+  .puzzle-words span,
+  .puzzle-words span * {
+    background: white !important;
+    background-color: white !important;
+  }
+
+  /* Kill any inline background left on grid cells or word chips. */
+  [style*="background"] {
+    background: white !important;
+    background-color: white !important;
+  }
+
+  body * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
