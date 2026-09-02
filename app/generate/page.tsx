@@ -8,6 +8,8 @@ import type { Lang, PuzzleData } from '@/lib/types'
 import { createHighlight } from '@/lib/highlight'
 import type { Highlight } from '@/lib/highlight'
 import { PuzzleView } from '@/components/puzzle-view'
+import { useI18n } from '../i18n-provider'
+import { LangSwitcher } from '../components/lang-switcher'
 
 const PUZZLES_PER_PAGE = 3
 
@@ -38,6 +40,7 @@ export default function GeneratePage() {
 }
 
 function GenerateApp() {
+  const { t } = useI18n()
   const searchParams = useSearchParams()
   const total =
     Math.min(20, Math.max(1, Number(searchParams.get('pages')) || 3)) *
@@ -142,36 +145,45 @@ function GenerateApp() {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-3">
           <div>
             <p className="text-sm font-semibold text-slate-900">
-              {params.lang.toUpperCase()} · {total} puzzles · {pages}{' '}
-              {pages === 1 ? 'page' : 'pages'}
+              {params.lang.toUpperCase()} · {total}{' '}
+              {t('puzzle_p')} · {pages}{' '}
+              {t(pages === 1 ? 'page_s' : 'page_p')}
             </p>
             <p className="text-xs text-slate-500" aria-live="polite">
               {busy
-                ? `Generating… ${readyCount}/${total} ready`
-                : 'Ready to print'}
+                ? t('gen_status_busy') +
+                  ` ${readyCount}/${total} ${t('puzzle_s')}`
+                : t('gen_ready')}
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <span className="mr-1 hidden sm:block">
+              <LangSwitcher />
+            </span>
             <Link
               href={`/configure?lang=${params.lang}`}
               className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
             >
-              ← New settings
+              {t('new_settings')}
             </Link>
             <button
               onClick={() => window.print()}
               disabled={busy}
               className="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {busy ? `Generating ${readyCount}/${total}…` : 'Print'}
+              {busy
+                ? t('generating_pct', {
+                    done: readyCount,
+                    total,
+                  })
+                : t('print')}
             </button>
           </div>
         </div>
       </div>
 
       <p className="screen-note">
-        Tip: the printed page hides the bonus solution word and color
-        highlights. ↻ regenerates a single puzzle.
+        {t('tip')}
       </p>
 
       <div className="print-sheet mx-auto">
@@ -181,73 +193,60 @@ function GenerateApp() {
               .slice(p * PUZZLES_PER_PAGE, (p + 1) * PUZZLES_PER_PAGE)
               .map((s, i) => {
                 const index = p * PUZZLES_PER_PAGE + i
-                const busy = s.status !== 'ready'
-                const hasPuzzle = 'puzzle' in s
-                const cellClass =
-                  'puzzle-cell' +
-                  (busy
-                    ? ' puzzle-cell-is-busy'
-                    : ' puzzle-cell-ready')
-                return (
-                  <div key={index} className={cellClass}>
-                    {hasPuzzle && (
-                      <>
-                        <PuzzleView
-                          puzzle={s.puzzle}
-                          highlight={s.highlight}
-                        />
-                        <div
-                          className={
-                            'puzzle-aux' +
-                            (busy ? ' puzzle-aux-busy' : '')
-                          }
-                        >
+                switch (s.status) {
+                  case 'ready':
+                    return (
+                      <div key={index} className="puzzle-cell puzzle-cell-ready">
+                        <PuzzleView puzzle={s.puzzle} highlight={s.highlight} />
+                        <div className="puzzle-aux">
                           <span className="puzzle-solution">
                             <span className="puzzle-solution-label">
-                              bonus word
+                              {t('bonus_word')}
                             </span>
                             <span className="solution-word">
                               {s.puzzle.solution}
                             </span>
                           </span>
-                          {s.status === 'pending' && (
-                            <span className="puzzle-aux-status">
-                              {s.label} — regenerating…
-                            </span>
-                          )}
-                          {s.status === 'ready' && (
-                            <button
-                              onClick={() => regenerate(index)}
-                              className="regen-btn"
-                            >
-                              ↻ Regenerate
-                            </button>
-                          )}
-                          {s.status === 'error' && (
-                            <button
-                              onClick={() => regenerate(index)}
-                              className="regen-btn"
-                            >
-                              ↻ Retry
-                            </button>
-                          )}
+                          <button
+                            onClick={() => regenerate(index)}
+                            className="regen-btn"
+                          >
+                            {t('regenerate')}
+                          </button>
                         </div>
-                        {s.status === 'error' && (
-                          <p className="puzzle-error-msg">{s.error}</p>
-                        )}
-                      </>
-                    )}
-
-                    {s.status === 'pending' && !hasPuzzle && (
-                      <div className="puzzle-state puzzle-state-full">
-                        <span className="puzzle-state-label">
-                          {s.label}
-                        </span>
-                        <span>generating…</span>
                       </div>
-                    )}
-                  </div>
-                )
+                    )
+                  case 'pending':
+                    return (
+                      <div key={index} className="puzzle-cell puzzle-cell-is-busy">
+                        <div className="puzzle-state puzzle-state-full">
+                          <span className="puzzle-state-label">{s.label}</span>
+                          <span>{t('regenerating')}</span>
+                        </div>
+                      </div>
+                    )
+                  case 'error':
+                    return (
+                      <div key={index} className="puzzle-cell puzzle-cell-is-busy">
+                        <div className="puzzle-state puzzle-state-full">
+                          <span
+                            className="puzzle-state-label puzzle-state-error"
+                          >
+                            {s.label}
+                          </span>
+                          <span className="puzzle-state-error">{s.error}</span>
+                        </div>
+                        <div className="puzzle-state-full">
+                          <button
+                            onClick={() => regenerate(index)}
+                            className="regen-btn"
+                          >
+                            {t('retry')}
+                          </button>
+                        </div>
+                      </div>
+                    )
+                }
               })}
           </div>
         ))}

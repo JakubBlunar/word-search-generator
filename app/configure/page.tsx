@@ -5,11 +5,15 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { LANGS } from '@/lib/types'
 import type { Lang } from '@/lib/types'
+import { detectUILang } from '@/lib/i18n'
+import { useI18n } from '../i18n-provider'
+import { LangSwitcher } from '../components/lang-switcher'
 
-const LANGUAGE_META: Record<Lang, { label: string; flag: string }> = {
-  sk: { label: 'Slovak', flag: '🇸🇰' },
-  cz: { label: 'Czech', flag: '🇨🇿' },
-  en: { label: 'English', flag: '🇬🇧' },
+// Language names shown inside a card are translated; flags stay literal.
+const LANGUAGE_FLAG: Record<Lang, string> = {
+  sk: '🇸🇰',
+  cz: '🇨🇿',
+  en: '🇬🇧',
 }
 
 const inLangs = (v: string | null): v is Lang =>
@@ -30,10 +34,13 @@ export default function ConfigurePage() {
 }
 
 function ConfigureApp() {
+  const { t } = useI18n()
   const router = useRouter()
   const searchParams = useSearchParams()
   const langParam = searchParams.get('lang')
-  const initialLang: Lang = inLangs(langParam) ? langParam : 'sk'
+  // Default the word-list language to the user's detected language,
+  // falling back to English for anything that isn't Slovak/Czech.
+  const initialLang: Lang = inLangs(langParam) ? langParam : detectUILang()
   const [lang, setLang] = useState<Lang>(initialLang)
   const [pages, setPages] = useState(3)
 
@@ -61,26 +68,32 @@ function ConfigureApp() {
               WS
             </span>
             <span className="text-lg font-semibold tracking-tight">
-              Word Search
+              {t('brand')}
             </span>
           </Link>
-          <span className="text-sm text-slate-500">
-            Step 1 of 2 · Configure
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-slate-500">
+              {t('step')}
+            </span>
+            <LangSwitcher />
+          </div>
         </div>
       </header>
 
       <section className="mx-auto max-w-3xl px-6 py-10">
         <h1 className="text-2xl font-bold tracking-tight">
-          Configure your print run
+          {t('cfg_title')}
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          Each A4 page contains <strong>3 puzzles</strong>.
+          {t('cfg_note', {
+            n: 3,
+            p: t('puzzle_p'),
+          })}
         </p>
 
         <div className="mt-8 space-y-8">
           <fieldset>
-            <legend className="mb-3 font-medium">Language</legend>
+            <legend className="mb-3 font-medium">{t('language')}</legend>
             <div className="grid gap-3 sm:grid-cols-3">
               {LANGS.map((code) => (
                 <label
@@ -100,9 +113,9 @@ function ConfigureApp() {
                     className="sr-only"
                   />
                   <span className="grid h-5 place-items-center leading-none">
-                    {LANGUAGE_META[code].flag}
-                  </span>
-                  <span className="leading-none">{LANGUAGE_META[code].label}</span>
+                      {LANGUAGE_FLAG[code]}
+                    </span>
+                    <span className="leading-none">{t(`lang_${code}`)}</span>
                 </label>
               ))}
             </div>
@@ -110,9 +123,11 @@ function ConfigureApp() {
 
           <fieldset>
             <div className="mb-3 flex items-baseline justify-between">
-              <legend className="font-medium">Pages</legend>
+              <legend className="font-medium">{t('pages')}</legend>
               <span className="text-sm text-slate-600">
-                {pages} {pages === 1 ? 'page' : 'pages'} · {pages * 3} puzzles
+                {pages}{' '}
+                {t(pages === 1 ? 'page_s' : 'page_p')} · {pages * 3}{' '}
+                {t(pages * 3 === 1 ? 'puzzle_s' : 'puzzle_p')}
               </span>
             </div>
             <input
@@ -132,12 +147,12 @@ function ConfigureApp() {
           <fieldset className="grid gap-6 sm:grid-cols-2">
             <div>
               <legend className="mb-3 font-medium">
-                Word length: {minLength}–{Math.max(maxLength, minLength)}{' '}
-                letters
+                {t('word_length')}:{' '}
+                {minLength}–{Math.max(maxLength, minLength)} {t('letters')}
               </legend>
               <div className="space-y-4">
                 <label className="block text-xs text-slate-600">
-                  Min
+                  {t('min')}
                   <input
                     type="range"
                     min={2}
@@ -152,7 +167,7 @@ function ConfigureApp() {
                   />
                 </label>
                 <label className="block text-xs text-slate-600">
-                  Max
+                  {t('max')}
                   <input
                     type="range"
                     min={3}
@@ -165,7 +180,7 @@ function ConfigureApp() {
               </div>
             </div>
             <div>
-              <legend className="mb-3 font-medium">Directions</legend>
+              <legend className="mb-3 font-medium">{t('directions')}</legend>
               <label className="flex cursor-pointer items-center gap-3 text-sm">
                 <input
                   type="checkbox"
@@ -173,10 +188,10 @@ function ConfigureApp() {
                   onChange={(e) => setDiagonals(e.target.checked)}
                   className="h-4 w-4 rounded accent-indigo-600"
                 />
-                Allow diagonals
+                {t('allow_diagonals')}
               </label>
               <p className="mt-3 text-xs leading-relaxed text-slate-500">
-                Without diagonals only horizontal and vertical words are placed.
+                {t('directions_desc')}
               </p>
             </div>
           </fieldset>
@@ -187,14 +202,17 @@ function ConfigureApp() {
             href="/"
             className="text-sm text-slate-500 hover:text-slate-700"
           >
-            ← Back
+            {t('back')}
           </Link>
           <button
             type="button"
             onClick={start}
             className="rounded-lg bg-indigo-600 px-8 py-3 font-medium text-white shadow-sm transition hover:bg-indigo-500"
           >
-            Generate {pages * 3} puzzles →
+            {t('generate_cta', {
+              n: pages * 3,
+              p: t('puzzle_p'),
+            })}
           </button>
         </div>
       </section>
