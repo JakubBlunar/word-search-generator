@@ -55,7 +55,17 @@ function GenerateApp() {
     ),
   )
   const [busy, setBusy] = useState(true)
-  const busyRef = useRef(0)
+  const pendingRef = useRef(0)
+  // Track in-flight fetches so we can abort them on unmount — this is
+  // what lets you actually navigate away from a stuck generation.
+  const controllersRef = useRef(new Set<AbortController>())
+  useEffect(() => {
+    const controllers = controllersRef.current
+    return () => {
+      controllers.forEach((c) => c.abort())
+      controllers.clear()
+    }
+  }, [])
 
   const params = {
     lang: (LANGS as readonly string[]).includes(searchParams.get('lang') ?? '')
@@ -70,20 +80,25 @@ function GenerateApp() {
     diagonals: searchParams.get('diagonals') !== 'false',
   }
 
-  const generateInto = useCallback(
-    async (indexes: number[]) => {
-      busyRef.current += 1
+  // Generate one puzzle at a time (concurrent across slots). Each
+  // request carries its own AbortController so the user can leave the
+  // page mid-generation without the in-flight work keeping them pinned.
+  const generateOne = useCallback(
+    async (index: number) => {
+      pendingRef.current += 1
       setBusy(true)
       setSlots((prev) =>
-        prev.map((s, i) => (indexes.includes(i) ? pendingSlot(s.label) : s)),
+        prev.map((s, i) => (i === index ? pendingSlot(s.label) : s)),
       )
+      const controller = new AbortController()
+      controllersRef.current.add(controller)
       try {
         const res = await fetch('/api/generate', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
             lang: params.lang,
-            count: indexes.length,
+            count: 1,
             options: {
               minLength: params.minLength,
               maxLength: params.maxLength,
@@ -91,35 +106,41 @@ function GenerateApp() {
               diagonals: params.diagonals,
             },
           }),
+          signal: controller.signal,
         })
         if (!res.ok) throw new Error(`server error ${res.status}`)
         const data = (await res.json()) as { puzzles: PuzzleData[] }
+        const puzzle = data.puzzles[0]
         setSlots((prev) =>
-          prev.map((s, i) => {
-            const position = indexes.indexOf(i)
-            if (position === -1) return s
-            const puzzle = data.puzzles[position]
-            return {
-              status: 'ready' as const,
-              label: s.label,
-              puzzle,
-              highlight: createHighlight(puzzle),
-            }
-          }),
+          prev.map((s, i) =>
+            i === index
+              ? {
+                  status: 'ready' as const,
+                  label: s.label,
+                  puzzle,
+                  highlight: createHighlight(puzzle),
+                }
+              : s,
+          ),
         )
       } catch (error) {
+        // Swallow AbortError — the user navigated away.
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          return
+        }
         const message =
           error instanceof Error ? error.message : 'generation failed'
         setSlots((prev) =>
           prev.map((s, i) =>
-            indexes.includes(i) && s.status === 'pending'
+            i === index && s.status === 'pending'
               ? errorSlot(s.label, `${message} — click ↻ to retry`)
               : s,
           ),
         )
       } finally {
-        busyRef.current -= 1
-        if (busyRef.current <= 0) setBusy(false)
+        controllersRef.current.delete(controller)
+        pendingRef.current -= 1
+        if (pendingRef.current <= 0) setBusy(false)
       }
     },
     [
@@ -130,6 +151,10 @@ function GenerateApp() {
       params.diagonals,
     ],
   )
+
+  const generateInto = (indexes: number[]) => {
+    indexes.forEach((i) => void generateOne(i))
+  }
 
   useEffect(() => {
     void generateInto(Array.from({ length: total }, (_, i) => i))
