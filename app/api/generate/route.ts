@@ -5,7 +5,6 @@ import { generate } from '@/lib/generator2'
 import { LANGS, type GenerationOptions, type Lang } from '@/lib/types'
 
 export const runtime = 'nodejs'
-export const maxDuration = 300
 
 type WordBank = {
   words: string[]
