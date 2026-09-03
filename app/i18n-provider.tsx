@@ -10,12 +10,17 @@ type I18nValue = {
   lang: UILang
   setLang: (l: UILang) => void
   t: (key: string, vars?: Record<string, string | number>) => string
+  /** True once the real UI language has been resolved on the client.
+   *  Consumers with side effects (fetches, etc.) should wait for this —
+   *  `lang` is the SSR default ('en') until then. */
+  ready: boolean
 }
 
 const I18nContext = createContext<I18nValue>({
   lang: 'en',
   setLang: () => {},
   t: (k, v) => translate('en', k, v),
+  ready: false,
 })
 
 function readStored(): UILang | null {
@@ -25,12 +30,16 @@ function readStored(): UILang | null {
 }
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  // Start as 'en' on both server and first client render (no hydration
-  // mismatch), then reconcile to the stored/preferred language on mount.
+  // Render as 'en' on the server and first client paint (no hydration
+  // mismatch). On mount, resolve to the stored/detected language in one
+  // shot and flip `ready` — effects gated on `ready` never observe the
+  // placeholder 'en' value.
   const [lang, setLangState] = useState<UILang>('en')
+  const [ready, setReady] = useState(false)
 
   useEffect(() => {
     setLangState(readStored() ?? detectUILang())
+    setReady(true)
   }, [])
 
   const setLang = (l: UILang) => {
@@ -46,9 +55,10 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     () => ({
       lang,
       setLang,
+      ready,
       t: (key, vars) => translate(lang, key, vars),
     }),
-    [lang],
+    [lang, ready],
   )
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>

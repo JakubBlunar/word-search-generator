@@ -1,7 +1,10 @@
 'use client'
 
-import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import Link from "next/link"
 import { useI18n } from './i18n-provider'
+import { SolvePuzzleDemo } from '@/components/solving-puzzle'
+import type { PuzzleData } from '@/lib/types'
 import { LangSwitcher } from './components/lang-switcher'
 
 const features = [
@@ -68,13 +71,11 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <GridPreview />
-            <div className="col-span-4 mt-2 flex flex-wrap gap-x-2 gap-y-1 font-mono text-[11px] text-slate-500">
-              {['MOLO', 'SIEŇA', 'KVET', 'BRNA', 'HRA'].map((w) => (
-                <span key={w}>{w}</span>
-              ))}
-            </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <DemoPuzzle />
+            <p className="mt-3 text-center text-xs text-slate-400">
+              {t('demo_caption')}
+            </p>
           </div>
         </div>
       </section>
@@ -104,6 +105,61 @@ export default function Home() {
   )
 }
 
+function Skeleton() {
+  return (
+    <div className="grid h-full w-full place-items-center py-16">
+      <div className="h-5 w-5 animate-pulse rounded-full bg-slate-200" />
+    </div>
+  )
+}
+
+function DemoPuzzle() {
+  // `ready` is true once the i18n provider has resolved the real UI language
+  // (it starts as the SSR default 'en' on first paint). Fetching only after
+  // that guarantees exactly one request for the one language the user is
+  // actually on — no fetch for the placeholder, no double-fire in
+  // StrictMode (that one is cancelled by the cleanup's abort anyway).
+  const { lang, ready } = useI18n()
+  const [puzzle, setPuzzle] = useState<PuzzleData | null>(null)
+  const [failed, setFailed] = useState(false)
+
+  useEffect(() => {
+    if (!ready) return
+    setPuzzle(null)
+    setFailed(false)
+    const ctrl = new AbortController()
+    fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lang, count: 1 }),
+      signal: ctrl.signal,
+    })
+      .then(async (r) => {
+        if (!r.ok) throw new Error(`generate failed: ${r.status}`)
+        const data = await r.json()
+        return data.puzzles?.[0] as PuzzleData | undefined
+      })
+      .then((p) => {
+        if (ctrl.signal.aborted) return
+        if (p) setPuzzle(p)
+        else setFailed(true)
+      })
+      .catch((e: unknown) => {
+        if (ctrl.signal.aborted) return
+        if (
+          e instanceof DOMException &&
+          (e.name === 'AbortError' || e.name === 'TimeoutError')
+        )
+          return
+        setFailed(true)
+      })
+    return () => ctrl.abort()
+  }, [lang, ready])
+
+  if (failed || !puzzle) return <Skeleton />
+  return <SolvePuzzleDemo key={lang} puzzle={puzzle} />
+}
+
 function Logo() {
   return (
     <div className="grid h-8 w-8 place-items-center rounded-lg bg-indigo-600 font-mono text-sm font-bold text-white">
@@ -112,26 +168,4 @@ function Logo() {
   )
 }
 
-const previewLetters = 'AKVETBRSIENAHROMOLOKVETBRNAHRA'
-  .repeat(4)
-  .slice(0, 9 * 16)
-const previewHighlights = new Set([2, 3, 4, 18, 19, 20, 36, 37, 38, 52, 53, 54])
 
-function GridPreview() {
-  return (
-    <div className="col-span-4 grid grid-cols-16 gap-1" aria-hidden>
-      {previewLetters.split('').map((letter, i) => (
-        <span
-          key={i}
-          className={`flex aspect-square items-center justify-center rounded font-mono text-[10px] ${
-            previewHighlights.has(i)
-              ? 'bg-indigo-100 text-indigo-700'
-              : 'bg-slate-50 text-slate-700'
-          }`}
-        >
-          {letter}
-        </span>
-      ))}
-    </div>
-  )
-}

@@ -33,6 +33,7 @@ const en: Dict = {
   solution_of: 'Solution of',
   // home
   generatePuzzles: 'Generate puzzle',
+  demo_caption: 'Live demo — a puzzle being solved',
   badge: 'Printable puzzle generator',
   h1a: 'Find the words',
   h1b: 'in a printable puzzle.',
@@ -102,6 +103,7 @@ const sk: Dict = {
   new_puzzle: 'Nová osemsmerovka',
   solution_of: 'Riešenie osemsmerovky',
   generatePuzzles: 'Vygenerovať osemsmerovku',
+  demo_caption: 'Naživo — riešiaca sa osemsmerovka',
   badge: 'Generátor tlačiteľných osemsmeroviek',
   h1a: 'Osemsmerovky',
   h1b: 'pripravené na tlač.',
@@ -171,6 +173,7 @@ const cz: Dict = {
   solution: 'Řešení',
   new_puzzle: 'Nová osmisměrka',
   solution_of: 'Řešení osmisměrky',
+  demo_caption: 'Živá ukázka — osmisměrka se řeší',
   generatePuzzles: 'Vygenerovat osmisměrku',
   badge: 'Generátor tisknutelných osmisměrek',
   h1a: 'Osmisměrky',
