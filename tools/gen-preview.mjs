@@ -24,7 +24,7 @@ const opts = {
 
 for (const lang of ['cz', 'sk', 'en']) {
   const bank = JSON.parse(
-    readFileSync(join(root, 'public', 'data', `words_${lang}.json`), 'utf8'),
+    readFileSync(join(root, 'data', `words_${lang}.json`), 'utf8'),
   )
   const puzzle = generateSinglePuzzle(bank, opts)
   const file = join(outDir, `preview_${lang}.json`)

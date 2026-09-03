@@ -7,7 +7,7 @@ Built with Next.js 16 (App Router) + React 19 + Tailwind CSS 4.
 
 ## Features
 
-- **Languages** — Slovak (PMEŇA 2.0), Czech, English (370k-word list)
+- **Languages** — Slovak (PMEŇA 2.0), Czech, English (common-words list, ~9k)
 - **Configuration** — pages (1–20), words per puzzle, min/max word length, diagonals on/off
 - **Print** — A4, 3 puzzles per page, solution + color highlights only on screen
 - **Per-puzzle regenerate** — refresh a single puzzle without re-rolling the sheet
@@ -18,7 +18,7 @@ Built with Next.js 16 (App Router) + React 19 + Tailwind CSS 4.
 
 ```bash
 npm install
-npm run words   # regenerate public/data/words_{sk,cz,en}.json from tools/word_lists
+npm run words   # regenerate data/words_{sk,cz,en}.json from tools/*.txt
 npm run dev
 ```
 
@@ -31,7 +31,7 @@ Open <http://localhost:3000>, pick a language, generate, print.
 | `npm run dev`   | Next.js dev server                                        |
 | `npm run build` | Production build (output in `dist-next/`)                 |
 | `npm start`     | Serve the production build                                |
-| `npm run words` | Rebuild the JSON word banks from `tools/word_lists/*.txt` |
+| `npm run words` | Rebuild the JSON word banks from `tools/*.txt` into `data/` |
 | `npm run lint`  | ESLint                                                    |
 
 ## Architecture
@@ -40,7 +40,7 @@ Open <http://localhost:3000>, pick a language, generate, print.
 - `lib/generator.ts` — the puzzle algorithm (word placement + solution word fill), pure TS, shared by the API
 - `components/puzzle-view.tsx` — grid table + word list + solution label
 - `app/print.css` — A4 print layout (`@page`, `.print-page` page breaks, solution hidden in `@media print`)
-- `tools/generate-words.mjs` — turns the plain-text word lists into `public/data/words_*.json`
+- `tools/generate-words.mjs` — turns the plain-text word lists into `data/words_*.json`
   (`{ words, count, lengths: { "<n>": [...] } }`)
 
 ## Print behavior

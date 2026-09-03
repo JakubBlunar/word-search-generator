@@ -43,7 +43,7 @@ const en: Dict = {
   free: 'Free · no account · prints locally in your browser',
   feat1_title: 'Three languages',
   feat1_desc:
-    'Slovak, Czech and English word lists — 370,000 English words included.',
+    'Slovak, Czech and English word lists — 9,000+ common English words.',
   feat2_title: 'Ready for A4 print',
   feat2_desc:
     'Every page holds three puzzles. Press print and your pages come out exactly as laid out.',
@@ -113,7 +113,7 @@ const sk: Dict = {
   free: 'Zdarma · bez účtu · tlačí sa lokálne v prehliadači',
   feat1_title: 'Tri jazyky',
   feat1_desc:
-    'Slovenské, české a anglické zoznamy slov — 370 000 anglických slov.',
+    'Slovenské, české a anglické zoznamy slov — 9 000+ bežných anglických slov.',
   feat2_title: 'Pripravené na A4',
   feat2_desc:
     'Každá strana obsahuje tri osemsmerovky. Stlačte tlač a strany vyjdú presne podľa rozloženia.',
@@ -184,7 +184,7 @@ const cz: Dict = {
   free: 'Zdarma · bez účtu · tiskne se lokálně v prohlížeči',
   feat1_title: 'Tři jazyky',
   feat1_desc:
-    'Slovenské, české a anglické seznamy slov — 370 000 anglických slov.',
+    'Slovenské, české a anglické seznamy slov — 9 000+ běžných anglických slov.',
   feat2_title: 'Připravené na A4',
   feat2_desc:
     'Každá strana obsahuje tři osmisměrky. Stiskněte tisk a strany vyjdou přesně podle rozložení.',

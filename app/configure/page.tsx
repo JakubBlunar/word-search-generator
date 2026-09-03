@@ -8,7 +8,7 @@ import type { Lang } from '@/lib/types'
 import { plural } from '@/lib/i18n'
 import { useI18n } from '../i18n-provider'
 import { LangSwitcher } from '../components/lang-switcher'
-
+import { AppLogo } from '@/components/app-logo'
 // Language names shown inside a card are translated; flags stay literal.
 const LANGUAGE_FLAG: Record<Lang, string> = {
   sk: '🇸🇰',
@@ -67,9 +67,7 @@ function ConfigureApp() {
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-5">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-indigo-600 font-mono text-sm font-bold text-white">
-              WS
-            </span>
+            <AppLogo />
             <span className="text-lg font-semibold tracking-tight">
               {t('word_search')}
             </span>

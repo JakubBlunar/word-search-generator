@@ -30,7 +30,6 @@ function getBank(lang: Lang): Promise<WordBank> {
   const load = (async (): Promise<WordBank> => {
     const file = path.join(
       process.cwd(),
-      'public',
       'data',
       `words_${lang}.json`,
     )

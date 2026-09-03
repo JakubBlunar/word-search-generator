@@ -12,7 +12,7 @@ import { generate } from '../lib/generator.ts'
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const lang = process.argv[2] ?? 'cz'
 const bank = JSON.parse(
-  readFileSync(join(root, 'public', 'data', `words_${lang}.json`), 'utf8'),
+  readFileSync(join(root, 'data', `words_${lang}.json`), 'utf8'),
 )
 const opts = {
   diagonals: true,

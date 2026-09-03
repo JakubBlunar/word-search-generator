@@ -82,8 +82,8 @@
 .puzzle-words {
   flex: 1 1 auto;
   min-width: 0;
-  font-size: 8mm;
-  line-height: 1.3;
+  font-size: 7.5mm;
+  line-height: 1.4;
   overflow-wrap: break-word;
   columns: 1;
   column-gap: 2mm;

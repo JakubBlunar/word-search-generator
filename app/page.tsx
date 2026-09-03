@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from "next/link"
 import { useI18n } from './i18n-provider'
 import { SolvePuzzleDemo } from '@/components/solving-puzzle'
+import { AppLogo } from '@/components/app-logo'
 import type { PuzzleData } from '@/lib/types'
 import { LangSwitcher } from './components/lang-switcher'
 
@@ -37,7 +38,7 @@ export default function Home() {
           <LangSwitcher />
           <Link
             href="/configure"
-            className=" rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700"
+            className=" rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 hidden md:block"
           >
             {t('generatePuzzles')}
           </Link>
@@ -73,9 +74,9 @@ export default function Home() {
 
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <DemoPuzzle />
-            <p className="mt-3 text-center text-xs text-slate-400">
+            {/* <p className="mt-3 text-center text-xs text-slate-400">
               {t('demo_caption')}
-            </p>
+            </p> */}
           </div>
         </div>
       </section>
@@ -161,11 +162,7 @@ function DemoPuzzle() {
 }
 
 function Logo() {
-  return (
-    <div className="grid h-8 w-8 place-items-center rounded-lg bg-indigo-600 font-mono text-sm font-bold text-white">
-      WS
-    </div>
-  )
+  return <AppLogo />
 }
 
 

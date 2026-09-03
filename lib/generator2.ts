@@ -9,7 +9,7 @@ type WordBank = {
 // Cache of length-band-filtered pools, keyed on the word-set array itself
 // (WeakMap: freed when the bank is GC'd) plus the "min:max" band. Repeated
 // requests for the same language/lengths skip re-filtering the full list
-// (the English bank is ~370k words / ~55k in the 3-6 band).
+// (the English bank is ~9k words / ~4.6k in the 3-6 band).
 const poolCache = new WeakMap<string[], Map<string, string[]>>()
 
 function poolFor(bank: WordBank, minLen: number, maxLen: number): string[] {
@@ -268,9 +268,19 @@ export function generate(
   bank: WordBank,
   options: GenerationOptions,
 ): PuzzleData {
-  // A single pass already returns a valid, full, solvable board (the
-  // exhaustive fallback in `placeAll` decouples correctness from `effort`),
-  // so we run it once. Throughput is the win: `generate` is now
-  // `generateSinglePuzzle`, no 3× retry loop, no 25× storm.
-  return generateSinglePuzzle(bank, options)
+  // `generateSinglePuzzle` already retries internally (per-word `attempts`
+  // + 200 full-board passes before throwing). With a small word pool the
+  // rare remaining throw (~1% observed on the filtered EN bank) is still
+  // meaningful to a caller — the API and the homepage demo each invoke us
+  // once and expect a board. One cheap outer retry brings failure odds
+  // down to ~10⁻⁵ without touching the hot path on the common case.
+  let lastErr: unknown
+  for (let i = 0; i < 3; i++) {
+    try {
+      return generateSinglePuzzle(bank, options)
+    } catch (e) {
+      lastErr = e
+    }
+  }
+  throw lastErr
 }
