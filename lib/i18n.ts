@@ -1,21 +1,62 @@
 export const UI_LANGS = ['en', 'sk', 'cz'] as const
 export type UILang = (typeof UI_LANGS)[number]
 
+/** Cookie the layout uses to remember the user's explicit choice (client
+ *  writes it on language switch; server reads it first, then Accept-Language). */
+export const LocaleCookie = 'ws.ui-lang'
+
+/** Map a BCP-47 language tag to one of our UI locales. */
+export function localeFromTag(tag: string | null | undefined): UILang {
+  if (!tag) return 'en'
+  const primary = tag.toLowerCase().split(/[-_]/)[0] ?? ''
+  if (primary === 'sk') return 'sk'
+  if (primary === 'cs' || primary === 'cz') return 'cz'
+  return 'en'
+}
+
 /**
- * Detect the UI language from the browser.
- * Slovak → sk, Czech → cz, everything else → en.
- * Returns 'en' on the server (no navigator).
+ * Detect the UI language on the server from the Accept-Language header.
+ * Used by `app/layout.tsx` to render the correct language on the initial
+ * SSR payload, so a returning user sees their language with no flash.
  */
-export function detectUILang(): UILang {
-  if (typeof navigator === 'undefined') return 'en'
+export function detectFromAcceptLanguage(header: string | null | undefined): UILang {
+  if (!header) return 'en'
+  const first = header.split(',')[0]?.trim()
+  return localeFromTag(first)
+}
+
+export function isUILangCode(v: unknown): v is UILang {
+  return typeof v === 'string' && (UI_LANGS as readonly string[]).includes(v)
+}
+
+/**
+ * Detect the UI language on the client (used only if the cookie is missing
+ * — e.g. privacy mode, first visit before the server has set it).
+ * Prefers the stored choice, then the browser's own languages.
+ */
+export function detectUILang(
+  storage?: { getItem: (k: string) => string | null },
+): UILang {
+  if (typeof window === 'undefined') return 'en'
+  if (storage) {
+    const raw = storage.getItem(LocaleCookie)
+    if (isUILangCode(raw)) return raw
+  }
   const raw =
     navigator.language ||
     (typeof navigator.languages === 'object' && navigator.languages?.[0]) ||
     'en'
-  const primary = raw.toLowerCase().split('-')[0] ?? 'en'
-  if (primary === 'sk') return 'sk'
-  if (primary === 'cs' || primary === 'cz') return 'cz'
-  return 'en'
+  return localeFromTag(raw)
+}
+
+/** Read a cookie from `document.cookie` (client-only). */
+export function readDocumentCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null
+  const m = document.cookie
+    .split('; ')
+    .find((row) => row.startsWith(`${name}=`))
+  if (!m) return null
+  return decodeURIComponent(m.slice(name.length + 1)) || null
 }
 
 type Dict = Record<string, string>
