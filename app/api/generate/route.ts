@@ -1,7 +1,7 @@
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { NextResponse } from 'next/server'
-import { generate } from '@/lib/generator'
+import { generate } from '@/lib/generator2'
 import { LANGS, type GenerationOptions, type Lang } from '@/lib/types'
 
 export const runtime = 'nodejs'
