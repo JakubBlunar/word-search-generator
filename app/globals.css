@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 
 @theme {
+  --font-sans: 'Figtree Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Space Grotesk Variable', 'Figtree Variable', ui-sans-serif, system-ui, sans-serif;
   --font-mono-grid: 'Roboto Mono', ui-monospace, monospace;
 }
 
@@ -20,6 +22,10 @@
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   animation: ws-draw 0.6s ease-out forwards;
+}
+
+button:not(:disabled) {
+  cursor: pointer;
 }
 
 @keyframes ws-ring {

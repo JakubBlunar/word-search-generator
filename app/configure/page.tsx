@@ -20,8 +20,8 @@ export default function ConfigurePage() {
   return (
     <Suspense
       fallback={
-        <main className="flex min-h-screen items-center justify-center bg-slate-50">
-          <p className="text-sm text-slate-500">Loading…</p>
+        <main className="flex min-h-screen items-center justify-center bg-stone-50">
+          <p className="text-sm text-stone-500">Loading…</p>
         </main>
       }
     >
@@ -63,28 +63,32 @@ function ConfigureApp() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="border-b border-slate-200 bg-white">
+    <main className="min-h-screen bg-stone-50 text-stone-900">
+      <header className="border-b border-stone-200 bg-white">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-5">
           <Link href="/" className="flex items-center gap-2.5">
             <AppLogo />
-            <span className="text-lg font-semibold tracking-tight">
+            <span className="font-display text-lg font-semibold tracking-tight">
               {t('word_search')}
             </span>
           </Link>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-slate-500">{t('step')}</span>
+            <span className="text-sm text-stone-500">{t('step')}</span>
             <LangSwitcher />
           </div>
         </div>
       </header>
 
       <section className="mx-auto max-w-3xl px-6 py-10">
-        <h1 className="text-2xl font-bold tracking-tight">{t('cfg_title')}</h1>
-        <p className="mt-2 text-sm text-slate-600">
+        <h1 className="font-display text-2xl font-bold tracking-tight">{t('cfg_title')}</h1>
+        <p className="mt-2 text-sm text-stone-600">
           {t('cfg_note', {
             n: 3,
-            p: t('puzzle_p'),
+            p: plural(uiLang, 3, {
+              one: 'puzzle_one',
+              many: 'puzzle_interval',
+              other: 'puzzle_other',
+            }),
           })}
         </p>
 
@@ -97,8 +101,8 @@ function ConfigureApp() {
                   key={code}
                   className={`flex cursor-pointer items-center gap-2.5 rounded-xl border-2 px-4 py-3 transition ${
                     lang === code
-                      ? 'border-indigo-600 bg-indigo-50 font-semibold text-indigo-900'
-                      : 'border-slate-200 bg-white hover:border-slate-300'
+                      ? 'border-stone-800 bg-stone-50 font-semibold text-stone-900'
+                      : 'border-stone-200 bg-white hover:border-stone-300'
                   }`}
                 >
                   <input
@@ -121,7 +125,7 @@ function ConfigureApp() {
           <fieldset>
             <div className="mb-3 flex items-baseline justify-between">
               <legend className="font-medium">{t('pages')}</legend>
-              <span className="text-sm text-slate-600">
+              <span className="text-sm text-stone-600">
                 {pages}{' '}
                 {plural(uiLang, pages, {
                   one: 'page_one',
@@ -136,17 +140,34 @@ function ConfigureApp() {
                 })}
               </span>
             </div>
-            <input
-              type="range"
-              min={1}
-              max={20}
-              value={pages}
-              onChange={(e) => setPages(Number(e.target.value))}
-              className="w-full accent-indigo-600"
-            />
-            <div className="mt-1 flex justify-between text-xs text-slate-400">
-              <span>1</span>
-              <span>20</span>
+            <div className="flex items-center gap-4">
+              <input
+                type="number"
+                min={1}
+                max={20}
+                value={pages}
+                onChange={(e) => {
+                  const raw = Number(e.target.value)
+                  if (!Number.isFinite(raw)) return
+                  setPages(Math.min(20, Math.max(1, Math.round(raw))))
+                }}
+                aria-label={t('pages')}
+                className="w-20 rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm font-medium tabular-nums outline-none transition focus:border-stone-500 focus:ring-2 focus:ring-stone-200"
+              />
+              <div className="flex-1">
+                <input
+                  type="range"
+                  min={1}
+                  max={20}
+                  value={pages}
+                  onChange={(e) => setPages(Number(e.target.value))}
+                  className="w-full accent-stone-900"
+                />
+                <div className="mt-1 flex justify-between text-xs text-stone-400">
+                  <span>1</span>
+                  <span>20</span>
+                </div>
+              </div>
             </div>
           </fieldset>
 
@@ -157,7 +178,7 @@ function ConfigureApp() {
                 {t('letters')}
               </legend>
               <div className="space-y-4">
-                <label className="block text-xs text-slate-600">
+                <label className="block text-xs text-stone-600">
                   {t('min')}
                   <input
                     type="range"
@@ -169,10 +190,10 @@ function ConfigureApp() {
                       setMinLength(v)
                       if (maxLength < v) setMaxLength(v)
                     }}
-                    className="mt-1 w-full accent-indigo-600"
+                    className="mt-1 w-full accent-stone-900"
                   />
                 </label>
-                <label className="block text-xs text-slate-600">
+                <label className="block text-xs text-stone-600">
                   {t('max')}
                   <input
                     type="range"
@@ -180,7 +201,7 @@ function ConfigureApp() {
                     max={8}
                     value={Math.max(maxLength, minLength)}
                     onChange={(e) => setMaxLength(Number(e.target.value))}
-                    className="mt-1 w-full accent-indigo-600"
+                    className="mt-1 w-full accent-stone-900"
                   />
                 </label>
               </div>
@@ -192,11 +213,11 @@ function ConfigureApp() {
                   type="checkbox"
                   checked={diagonals}
                   onChange={(e) => setDiagonals(e.target.checked)}
-                  className="h-4 w-4 rounded accent-indigo-600"
+                  className="h-4 w-4 rounded accent-stone-900"
                 />
                 {t('allow_diagonals')}
               </label>
-              <p className="mt-3 text-xs leading-relaxed text-slate-500">
+              <p className="mt-3 text-xs leading-relaxed text-stone-500">
                 {t('directions_desc')}
               </p>
             </div>
@@ -206,18 +227,22 @@ function ConfigureApp() {
         <div className="mt-12 flex items-center justify-between">
           <Link
             href="/"
-            className="text-sm text-slate-500 hover:text-slate-700"
+            className="text-sm text-stone-500 hover:text-stone-800"
           >
             {t('back')}
           </Link>
           <button
             type="button"
             onClick={start}
-            className="rounded-lg bg-indigo-600 px-8 py-3 font-medium text-white shadow-sm transition hover:bg-indigo-500"
+            className="rounded-lg bg-stone-900 px-8 py-3 font-medium text-white transition hover:bg-stone-700"
           >
             {t('generate_cta', {
               n: pages * 3,
-              p: t('puzzle_p'),
+              p: plural(uiLang, pages * 3, {
+                one: 'puzzle_one',
+                many: 'puzzle_interval',
+                other: 'puzzle_other',
+              }),
             })}
           </button>
         </div>

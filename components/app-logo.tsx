@@ -15,13 +15,13 @@ export function AppLogo({ className }: { className?: string }) {
       aria-label="Word Search"
       className={className ?? 'h-8 w-8 shrink-0 rounded-lg'}
     >
-      <rect width="96" height="96" rx="22" fill="#4f46e5" />
-      <g stroke="#a5b4fc" strokeWidth="1.25" opacity="0.55">
+      <rect width="96" height="96" rx="22" fill="#1c1917" />
+      <g stroke="#a8a29e" strokeWidth="1.25" opacity="0.3">
         <line x1="2" y1="24" x2="94" y2="24" />
         <line x1="2" y1="48" x2="94" y2="48" />
         <line x1="2" y1="72" x2="94" y2="72" />
       </g>
-      <g fill="#a5b4fc" opacity="0.55">
+      <g fill="#a8a29e" opacity="0.4">
         <rect x="5" y="5" width="17" height="17" rx="3.5" />
         <rect x="74" y="5" width="17" height="17" rx="3.5" />
         <rect x="5" y="74" width="17" height="17" rx="3.5" />
@@ -33,8 +33,8 @@ export function AppLogo({ className }: { className?: string }) {
         fontSize="30"
         textAnchor="middle"
         dominantBaseline="middle"
-        fill="#a5b4fc"
-        opacity="0.6"
+        fill="#a8a29e"
+        opacity="0.55"
       >
         D
       </text>
@@ -45,7 +45,7 @@ export function AppLogo({ className }: { className?: string }) {
         strokeLinecap="round"
         opacity="0.95"
       />
-      <circle cx="86" cy="86" r="7.5" fill="#fff" />
+      <circle cx="86" cy="86" r="7.5" fill="#f59e0b" />
     </svg>
   )
 }

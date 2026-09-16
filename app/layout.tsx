@@ -1,4 +1,6 @@
 import { cookies, headers } from 'next/headers'
+import '@fontsource-variable/figtree/wght.css'
+import '@fontsource-variable/space-grotesk/wght.css'
 import './globals.css'
 import './print.css'
 import { I18nProvider } from './i18n-provider'

@@ -181,14 +181,14 @@ export function SolvePuzzleDemo({ puzzle }: { puzzle: PuzzleData }) {
                 width={0.86}
                 height={0.86}
                 rx={0.16}
-                className="fill-slate-100"
+                className="fill-stone-100"
               />
               <text
                 x={c.x + 0.5}
                 y={c.y + 0.5}
                 textAnchor="middle"
                 dominantBaseline="central"
-                className="fill-slate-700 font-mono"
+                className="fill-stone-700 font-mono"
                 style={{ fontSize: 0.5, fontWeight: 600 }}
               >
                 {c.letter.toUpperCase()}
@@ -206,10 +206,10 @@ export function SolvePuzzleDemo({ puzzle }: { puzzle: PuzzleData }) {
                 pathLength={1}
                 className="ws-pen-line"
                 fill="none"
-                stroke="#0f172a"
+                stroke="#d97706"
                 strokeWidth={0.09}
                 strokeLinecap="round"
-                opacity={0.85}
+                opacity={0.9}
               />
             ))}
 
@@ -238,14 +238,14 @@ export function SolvePuzzleDemo({ puzzle }: { puzzle: PuzzleData }) {
             key={w}
             className={`rounded px-1 font-mono transition-colors duration-300 ${
               i < linesDone
-                ? 'bg-slate-200 text-slate-400 line-through'
-                : 'bg-white text-slate-500'
+                ? 'bg-stone-200 text-stone-400 line-through'
+                : 'bg-white text-stone-500'
             }`}
           >
             {w.toUpperCase()}
           </span>
         ))}
-        <span className="ml-1 font-medium text-slate-400">
+        <span className="ml-1 font-medium text-stone-400">
           {t('solution')}:
         </span>
         <span className="flex gap-0.5">
@@ -262,7 +262,7 @@ export function SolvePuzzleDemo({ puzzle }: { puzzle: PuzzleData }) {
               {ch.toUpperCase()}
             </span>
           ))}
-          {dotsDone === 0 && <span className="text-slate-300">···</span>}
+          {dotsDone === 0 && <span className="text-stone-300">···</span>}
         </span>
       </div>
     </div>

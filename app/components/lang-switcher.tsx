@@ -19,7 +19,7 @@ export function LangSwitcher() {
   const { lang, setLang } = useI18n()
   return (
     <div
-      className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white p-1"
+      className="flex items-center gap-1 rounded-lg border border-stone-200 bg-white p-1"
       role="group"
       aria-label={NAMES[lang]}
     >
@@ -30,8 +30,8 @@ export function LangSwitcher() {
           onClick={() => setLang(code)}
           className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition ${
             lang === code
-              ? 'bg-indigo-600 text-white'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'bg-stone-900 text-white'
+              : 'text-stone-600 hover:bg-stone-100'
           }`}
           title={NAMES[code]}
         >

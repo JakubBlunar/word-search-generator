@@ -30,8 +30,8 @@ export default function GeneratePage() {
   return (
     <Suspense
       fallback={
-        <main className="flex min-h-screen items-center justify-center bg-slate-200">
-          <p className="text-sm text-slate-500">Loading…</p>
+        <main className="flex min-h-screen items-center justify-center bg-stone-100">
+          <p className="text-sm text-stone-500">Loading…</p>
         </main>
       }
     >
@@ -161,11 +161,11 @@ function GenerateApp() {
   const readyCount = slots.filter((s) => s.status === 'ready').length
 
   return (
-    <main className="min-h-screen bg-slate-200 pb-16 print:bg-white print:pb-0">
-      <div className="app-toolbar sticky top-0 z-10 border-b border-slate-300 bg-white/90 backdrop-blur">
+    <main className="min-h-screen bg-stone-100 pb-16 print:bg-white print:pb-0">
+      <div className="app-toolbar sticky top-0 z-10 border-b border-stone-200 bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-3">
           <div>
-            <p className="text-sm font-semibold text-slate-900">
+            <p className="text-sm font-semibold text-stone-900">
               {params.lang.toUpperCase()} · {total} {plural(uiLang, total, {
                   one: 'puzzle_one',
                   many: 'puzzle_interval',
@@ -177,7 +177,7 @@ function GenerateApp() {
                 other: 'page_other',
               })}
             </p>
-            <p className="text-xs text-slate-500" aria-live="polite">
+            <p className="text-xs text-stone-500" aria-live="polite">
               {busy
                 ? t('gen_status_busy') + ` ${readyCount}/${total}`
                 : t('gen_ready')}
@@ -189,14 +189,14 @@ function GenerateApp() {
             </span>
             <Link
               href="/configure"
-              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+              className="rounded-lg border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100"
             >
               {t('new_settings')}
             </Link>
             <button
               onClick={() => window.print()}
               disabled={busy}
-              className="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-lg bg-stone-900 px-5 py-2 text-sm font-medium text-white transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {busy
                 ? t('generating_pct', {

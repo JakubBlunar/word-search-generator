@@ -26,11 +26,11 @@ const features = [
 export default function Home() {
   const { t } = useI18n()
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900">
+    <main className="min-h-screen bg-stone-50 text-stone-900">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <div className="flex items-center gap-2.5">
           <Logo />
-          <span className="text-lg font-semibold tracking-tight">
+          <span className="font-display text-lg font-semibold tracking-tight">
             {t('word_search')}
           </span>
         </div>
@@ -38,7 +38,7 @@ export default function Home() {
           <LangSwitcher />
           <Link
             href="/configure"
-            className=" rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 hidden md:block"
+            className="rounded-lg bg-stone-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-stone-700 hidden md:block"
           >
             {t('generatePuzzles')}
           </Link>
@@ -48,47 +48,47 @@ export default function Home() {
       <section className="mx-auto max-w-6xl px-6 pb-20 pt-16 md:pt-24">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <div>
-            <p className="mb-4 inline-block rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-medium uppercase tracking-wider text-indigo-700">
+            <p className="mb-4 inline-block rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-800">
               {t('badge')}
             </p>
-            <h1 className="text-4xl font-bold leading-tight tracking-tight md:text-5xl">
+            <h1 className="font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl">
               {t('h1a')}
               <br />
-              <span className="text-indigo-600">{t('h1b')}</span>
+              {t('h1b')}
             </h1>
-            <p className="mt-6 max-w-md text-lg leading-relaxed text-slate-600">
+            <p className="mt-6 max-w-md text-lg leading-relaxed text-stone-600">
               {t('intro')}
             </p>
             <div className="mt-8 flex items-center gap-4">
               <Link
                 href="/configure"
-                className="rounded-lg bg-indigo-600 px-6 py-3 font-medium text-white shadow-sm transition hover:bg-indigo-500"
+                className="rounded-lg bg-stone-900 px-6 py-3 font-medium text-white transition hover:bg-stone-700"
               >
                 {t('start')}
               </Link>
-              <span className="text-sm text-slate-500">
+              <span className="text-sm text-stone-500">
                 {t('free')}
               </span>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-stone-200 bg-white p-5">
             <DemoPuzzle />
-            {/* <p className="mt-3 text-center text-xs text-slate-400">
+            {/* <p className="mt-3 text-center text-xs text-stone-400">
               {t('demo_caption')}
             </p> */}
           </div>
         </div>
       </section>
 
-      <section className="border-t border-slate-200 bg-white">
+      <section className="border-t border-stone-200 bg-white">
         <div className="mx-auto grid max-w-6xl gap-8 px-6 py-16 md:grid-cols-3">
           {features.map((feature) => (
             <div key={feature.titleKey}>
-              <h3 className="font-semibold text-slate-900">
+              <h3 className="font-display font-semibold text-stone-900">
                 {t(feature.titleKey)}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+              <p className="mt-2 text-sm leading-relaxed text-stone-600">
                 {t(feature.descKey)}
               </p>
             </div>
@@ -96,9 +96,9 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="mx-auto flex max-w-6xl items-center justify-between px-6 py-8 text-xs text-slate-400">
+      <footer className="mx-auto flex max-w-6xl items-center justify-between px-6 py-8 text-xs text-stone-400">
         <span>{t('footer')}</span>
-        <Link href="/configure" className="hover:text-slate-600">
+        <Link href="/configure" className="hover:text-stone-600">
           {t('configureLink')}
         </Link>
       </footer>
@@ -109,7 +109,7 @@ export default function Home() {
 function Skeleton() {
   return (
     <div className="grid h-full w-full place-items-center py-16">
-      <div className="h-5 w-5 animate-pulse rounded-full bg-slate-200" />
+      <div className="h-5 w-5 animate-pulse rounded-full bg-stone-200" />
     </div>
   )
 }

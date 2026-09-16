@@ -102,8 +102,9 @@ const en: Dict = {
   page_one: 'page',
   page_interval: 'pages',
   page_other: 'pages',
-  puzzle_s: 'puzzle',
-  puzzle_p: 'puzzles',
+  puzzle_one: 'puzzle',
+  puzzle_interval: 'puzzles',
+  puzzle_other: 'puzzles',
   word_length: 'Word length',
   letters: 'letters',
   min: 'Min',
@@ -113,7 +114,7 @@ const en: Dict = {
   directions_desc:
     'Without diagonals only horizontal and vertical words are placed.',
   back: '← Back',
-  generate_cta: 'Vygenerovať {n} {p} →',
+  generate_cta: 'Generate {n} {p} →',
   // generate
   gen_toolbar: '{lang} · {n} {puzzles} · {m} {pages}',
   gen_status_busy: 'Generating…',
