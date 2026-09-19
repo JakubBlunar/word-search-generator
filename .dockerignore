@@ -1,0 +1,9 @@
+node_modules
+.next
+dist-next
+.playwright-mcp
+.git
+.env
+tsconfig.tsbuildinfo
+# historical reference screenshots at repo root
+/*.png

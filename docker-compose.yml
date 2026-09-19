@@ -1,0 +1,32 @@
+# word-search generator — runs behind the shared Traefik edge proxy.
+#
+# Deploy:  docker compose up -d --build      (or ./deploy.sh)
+# Requires the external "web" network that Traefik sits on (see the chat repo's
+# DEPLOYMENT.md, "Adding Another Website"). Traefik auto-discovers this service
+# via its labels and auto-issues a Let's Encrypt cert for ${WORD_SEARCH_HOST}.
+#
+# No public ports: Traefik is the only thing on 80/443 and routes to us.
+
+services:
+  word-search:
+    build:
+      context: .
+    image: word-search:latest
+    restart: unless-stopped
+    environment:
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+    expose:
+      - "3000"
+    networks:
+      - web
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.word-search.rule=Host(`${WORD_SEARCH_HOST}`)'
+      - 'traefik.http.routers.word-search.entrypoints=websecure'
+      - 'traefik.http.routers.word-search.tls.certresolver=letsencrypt'
+      - 'traefik.http.services.word-search.loadbalancer.server.port=3000'
+
+networks:
+  web:
+    external: true
